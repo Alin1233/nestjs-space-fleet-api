@@ -47,3 +47,10 @@ Pour les exécuter, utilisez la commande suivante:
 ```bash
   npm run test
 ```
+
+## Auteurs
+I1 Dev1 EISI 2025
+- Paul SUPIOT
+- Terry BARILLON
+- Mahtys PEROLS
+- Alin HERCIU
