@@ -28,6 +28,13 @@ export class StarshipsService {
       crew: 9,
       status: 'maintenance',
     },
+    {
+      id: '4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s',
+      name: 'Serenity 2',
+      model: 'Firefly 2',
+      crew: 9000,
+      status: 'maintenance',
+    },
   ];
 
   create(createStarshipDto: CreateStarshipDto): Starship {
