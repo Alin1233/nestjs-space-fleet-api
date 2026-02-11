@@ -46,7 +46,7 @@ steps:
       - '--image'
       - 'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:$_TAG'
       - '--region'
-      - 'us-central1'
+      - 'europe-west9'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
