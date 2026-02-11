@@ -8,6 +8,7 @@ options:
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
+    dir: 'frontend'
     args:
       [
         'build',
