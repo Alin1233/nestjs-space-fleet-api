@@ -1,5 +1,9 @@
 substitutions:
   _TAG: 'latest'
+  _API_URL: 'https://nestjs-space-fleet-api-851018610317.europe-west9.run.app'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 steps:
   # Install dependencies
