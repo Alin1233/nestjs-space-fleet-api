@@ -1,0 +1,56 @@
+substitutions:
+  _TAG: 'latest'
+
+steps:
+  # Install dependencies
+  - name: 'node:24'
+    entrypoint: 'npm'
+    args: ['install']
+
+  # Run unit tests
+  - name: 'node:24'
+    entrypoint: 'npm'
+    args: ['run', 'test']
+
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t',
+        'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:$_TAG',
+        '-t',
+        'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:latest',
+        '.',
+      ]
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:$_TAG',
+      ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      ['push', 'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:latest']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'nestjs-space-fleet-api'
+      - '--image'
+      - 'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:$_TAG'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+
+images:
+  - 'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:$_TAG'
+  - 'gcr.io/my-space-fleet-project/nestjs-space-fleet-api:latest'

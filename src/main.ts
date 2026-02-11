@@ -14,6 +14,8 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Space Fleet API')
     .setDescription("API de gestion d'une flotte de vaisseaux spatiaux")
@@ -23,6 +25,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, document);
 
-  await app.listen(1234);
+  await app.listen(process.env.PORT || 1234);
 }
 void bootstrap();

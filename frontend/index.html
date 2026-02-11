@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Fleet Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #0d1117;
+            --secondary-color: #161b22;
+            --accent-color: #58a6ff;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .card {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #ffffff;
+            font-size: 1.25rem;
+        }
+
+        .card p {
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status.operational {
+            background-color: rgba(35, 134, 54, 0.2);
+            color: #3fb950;
+            border: 1px solid rgba(35, 134, 54, 0.4);
+        }
+
+        .status.maintenance {
+            background-color: rgba(187, 128, 9, 0.2);
+            color: #d29922;
+            border: 1px solid rgba(187, 128, 9, 0.4);
+        }
+
+        .status.damaged {
+            background-color: rgba(218, 54, 51, 0.2);
+            color: #f85149;
+            border: 1px solid rgba(218, 54, 51, 0.4);
+        }
+
+        .status.decommissioned {
+            background-color: rgba(110, 118, 129, 0.2);
+            color: #8b949e;
+            border: 1px solid rgba(110, 118, 129, 0.4);
+        }
+
+        .group-members {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8b949e;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            width: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #8b949e;
+        }
+
+        .error {
+            color: #f85149;
+            text-align: center;
+            border: 1px solid rgba(218, 54, 51, 0.4);
+            background-color: rgba(218, 54, 51, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
+    <!-- Load runtime configuration -->
+    <script src="env-config.js"></script>
+</head>
+
+<body>
+
+    <h1>🚀 Space Fleet Command</h1>
+
+    <div class="container" id="starship-list">
+        <div class="loading">Sening transmission to Fleet Command... (Loading data)</div>
+    </div>
+
+    <div class="group-members">
+        <p><strong>Dev Team (I1 Dev1 EISI 2025):</strong></p>
+        <p>Paul SUPIOT • Terry BARILLON • Mahtys PEROLS • Alin HERCIU</p>
+    </div>
+
+    <script>
+        // Configuration: API URL
+        // Load from window.env (runtime config) or fallback to default
+        const API_URL = (window.env && window.env.API_URL) ? window.env.API_URL : 'http://localhost:3000';
+
+        async function fetchStarships() {
+            const container = document.getElementById('starship-list');
+
+            try {
+                console.log(`Fetching data from: ${API_URL}/starships`);
+                const response = await fetch(`${API_URL}/starships`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const starships = await response.json();
+
+                container.innerHTML = ''; // Clear loading message
+
+                if (starships.length === 0) {
+                    container.innerHTML = '<div class="card"><p style="text-align:center">No starships in the fleet.</p></div>';
+                    return;
+                }
+
+                starships.forEach(ship => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h2>${ship.name}</h2>
+                            <span class="status ${ship.status}">${ship.status}</span>
+                        </div>
+                        <p><strong>Model:</strong> ${ship.model}</p>
+                        <p><strong>Crew:</strong> ${ship.crew}</p>
+                        <p style="font-size:0.8rem; color:#8b949e;">ID: ${ship.id}</p>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Error fetching starships:', error);
+
+                let errorMsg = `
+                    <div class="error">
+                        <h3>Connection Lost</h3>
+                        <p>Failed to retrieve fleet data.</p>
+                        <p>Tried connecting to: <strong>${API_URL}</strong></p>
+                        <p><small>${error.message}</small></p>
+                    </div>
+                `;
+                container.innerHTML = errorMsg;
+            }
+        }
+
+        // Initialize
+        fetchStarships();
+    </script>
+
+</body>
+
+</html>

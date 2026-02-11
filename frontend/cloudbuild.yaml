@@ -1,0 +1,49 @@
+substitutions:
+  _TAG: 'latest'
+  _API_URL: 'https://nestjs-space-fleet-api-851018610317.us-central1.run.app'
+
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t',
+        'gcr.io/my-space-fleet-project/space-fleet-frontend:$_TAG',
+        '-t',
+        'gcr.io/my-space-fleet-project/space-fleet-frontend:latest',
+        '.',
+      ]
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        'gcr.io/my-space-fleet-project/space-fleet-frontend:$_TAG',
+      ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      ['push', 'gcr.io/my-space-fleet-project/space-fleet-frontend:latest']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'space-fleet-frontend'
+      - '--image'
+      - 'gcr.io/my-space-fleet-project/space-fleet-frontend:$_TAG'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'API_URL=$_API_URL'
+
+images:
+  - 'gcr.io/my-space-fleet-project/space-fleet-frontend:$_TAG'
+  - 'gcr.io/my-space-fleet-project/space-fleet-frontend:latest'
