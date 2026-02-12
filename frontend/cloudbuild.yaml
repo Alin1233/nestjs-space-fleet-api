@@ -41,18 +41,18 @@ steps:
         TARGET_API_URL="$_API_URL"
 
         # 2. If no substitution provided, fetch dynamically
-        if [ -z "$TARGET_API_URL" ]; then
+        if [ -z "$$TARGET_API_URL" ]; then
           echo "No _API_URL substitution provided. Fetching from backend service..."
-          TARGET_API_URL=$(gcloud run services describe nestjs-space-fleet-api --region europe-west9 --format 'value(status.url)')
+          TARGET_API_URL=$$(gcloud run services describe nestjs-space-fleet-api --region europe-west9 --format 'value(status.url)')
         fi
 
         # 3. Validation
-        if [ -z "$TARGET_API_URL" ]; then
+        if [ -z "$$TARGET_API_URL" ]; then
           echo "Error: Could not determine API_URL. Please set _API_URL or ensure backend service is running."
           exit 1
         fi
 
-        echo "Deploying with API_URL=$TARGET_API_URL"
+        echo "Deploying with API_URL=$$TARGET_API_URL"
 
         # 4. Deploy
         gcloud run deploy space-fleet-frontend \
@@ -60,7 +60,7 @@ steps:
           --region europe-west9 \
           --platform managed \
           --allow-unauthenticated \
-          --set-env-vars API_URL=$TARGET_API_URL
+          --set-env-vars API_URL=$$TARGET_API_URL
 
 images:
   - 'gcr.io/my-space-fleet-project/space-fleet-frontend:$_TAG'
